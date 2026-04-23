@@ -8,7 +8,7 @@ import (
 )
 
 type AppConfig struct {
-	Addrs string
+	Port string
 }
 
 func Load() *AppConfig {
@@ -19,6 +19,6 @@ func Load() *AppConfig {
 	}
 
 	return &AppConfig{
-		Addrs: os.Getenv("ADDRESS"),
+		Port: os.Getenv("PORT"),
 	}
 }
