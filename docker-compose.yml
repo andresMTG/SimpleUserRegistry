@@ -3,7 +3,7 @@ services:
     image: mysql:latest
     restart: always
     environment:
-      MYSQL_NAME: ${DB_NAME}
+      MYSQL_DATABASE: ${DB_NAME}
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
@@ -12,13 +12,20 @@ services:
     volumes:
       - ./configs/database/migrations:/docker-entrypoint-initdb.d
       - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      
 
   app:
     build: .
     env_file:
     - .env
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       DB_SOURCE: "${DB_USER}:${DB_PASSWORD}@tcp(db:3306)/${DB_NAME}?parseTime=true"
     ports:
